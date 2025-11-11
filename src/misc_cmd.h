@@ -25,6 +25,8 @@ CommandCost CmdChangeBankBalance(DoCommandFlags flags, TileIndex tile, Money del
 CommandCost CmdIncreaseLoan(DoCommandFlags flags, LoanCommand cmd, Money amount);
 CommandCost CmdDecreaseLoan(DoCommandFlags flags, LoanCommand cmd, Money amount);
 CommandCost CmdSetCompanyMaxLoan(DoCommandFlags flags, CompanyID company, Money amount);
+CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyToBuyInID, uint32 amount);
+CommandCost CmdDecreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyToBuyInID);
 CommandCost CmdPause(DoCommandFlags flags, PauseMode mode, bool pause);
 
 DEF_CMD_TRAIT(CMD_MONEY_CHEAT,          CmdMoneyCheat,        CommandFlags({CommandFlag::Offline, CommandFlag::NoEst}), CMDT_CHEAT)
@@ -32,6 +34,8 @@ DEF_CMD_TRAIT(CMD_CHANGE_BANK_BALANCE,  CmdChangeBankBalance, CommandFlag::Deity
 DEF_CMD_TRAIT(CMD_INCREASE_LOAN,        CmdIncreaseLoan,      {},                       CMDT_MONEY_MANAGEMENT)
 DEF_CMD_TRAIT(CMD_DECREASE_LOAN,        CmdDecreaseLoan,      {},                       CMDT_MONEY_MANAGEMENT)
 DEF_CMD_TRAIT(CMD_SET_COMPANY_MAX_LOAN, CmdSetCompanyMaxLoan, CommandFlag::Deity,               CMDT_MONEY_MANAGEMENT)
+DEF_CMD_TRAIT(CMD_BUY_OWNERSHIP,        CmdIncreaseCompanyOwnership,      {},                       CMDT_MONEY_MANAGEMENT)
+DEF_CMD_TRAIT(CMD_SELL_OWNERSHIP,        CmdDecreaseCompanyOwnership,      {},                       CMDT_MONEY_MANAGEMENT)
 DEF_CMD_TRAIT(CMD_PAUSE,                CmdPause,             CommandFlags({CommandFlag::Server, CommandFlag::NoEst}), CMDT_SERVER_SETTING)
 
 #endif /* MISC_CMD_H */

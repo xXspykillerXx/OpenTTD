@@ -2560,6 +2560,7 @@ struct CompanyOwnershipWindow : Window {
 			//DrawString(ir.left, ir.right, labelr.top, "Test2", TC_ORANGE);
 		OTTD_Rect originalLeft = ir;
 		int keyValueHorizontalSpacing = 400; 
+		uint32 FreeStock = 100;
 		for (const auto& pair : ownership){
 			ir.left = originalLeft.left;
 			//Rect icon_rect = ir.Indent(this->rank_width + WidgetDimensions::scaled.hsep_wide, rtl).WithWidth(this->icon.width, rtl);
@@ -2573,9 +2574,14 @@ struct CompanyOwnershipWindow : Window {
 			ir.left += keyValueHorizontalSpacing;
 			DrawString(ir.left, ir.right, labelr.top, GetString(STR_COMPANY_OWNERSHIP_VALUE,pair.second), TC_ORANGE);
 			labelr.top += line_height;
+			FreeStock -= pair.second;
 			//this->list.emplace_back(CompanyOwnershipItemType::Value,STR_COMPANY_OWNERSHIP_VIEW_COMPANY, pair.second);
 			//this->list.emplace_back(CompanyOwnershipItemType::Spacer);
 		}
+		ir.left = originalLeft.left;
+		DrawString(ir.left, ir.right, labelr.top, "Available", TC_ORANGE);
+		ir.left += keyValueHorizontalSpacing;
+		DrawString(ir.left, ir.right, labelr.top, GetString(STR_COMPANY_OWNERSHIP_VALUE,FreeStock), TC_ORANGE);
 		/* Update scrollbar. */
 		//this->GetScrollbar(WID_CI_SCROLLBAR)->SetCount(std::size(list));
 				//DrawStringMultiLine(r, GetString(this->hostile_takeover ? STR_BUY_COMPANY_HOSTILE_TAKEOVER : STR_BUY_COMPANY_MESSAGE, c->index, this->company_value), TC_FROMSTRING, SA_CENTER);
@@ -2593,10 +2599,17 @@ struct CompanyOwnershipWindow : Window {
 
 			case WID_CO_BUY:
 				//Command<CMD_BUY_COMPANY>::Post(STR_ERROR_CAN_T_BUY_COMPANY, this->window_number, this->hostile_takeover);
+				const Company *c = Company::GetIfValid(this->window_number);
+				Command<CMD_BUY_OWNERSHIP>::Post(STR_ERROR_CAN_T_BUY_COMPANY_OWNERSHIP, c->index, 10);
+				this->ReInit();
 				break;
 		}
 	}
-
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
+	{
+			this->ReInit();
+		
+	}
 	/**
 	 * Check on a regular interval if the company value has changed.
 	 */

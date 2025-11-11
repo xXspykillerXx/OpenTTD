@@ -141,7 +141,72 @@ CommandCost CmdSetCompanyMaxLoan(DoCommandFlags flags, CompanyID company, Money 
 	}
 	return CommandCost();
 }
+CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyToBuyInID, uint32 Amount)
+{
+	Company *c = Company::Get(_current_company);
+	Company *CompanyToBuyIn = Company::Get(CompanyToBuyInID);
+	std::map<CompanyID, uint32> CurrentOwnership = CompanyToBuyIn->CompanyOwnership;
+	if(CurrentOwnership[c->index] == 100){
+		return CommandCost(STR_ERROR_MAXIMUM_COMPANY_OWNERSHIP);
+	}
+	int AvailableStock = 0;
+	int UnAvailableStock = 0;
+	bool firstLoop = true;
+	CompanyID MostStock;
+	for (const auto& pair : CurrentOwnership)
+	{
+		UnAvailableStock += pair.second;
+		if(firstLoop){
+			if (pair.first != c->index)
+			{
+				MostStock = pair.first;
+				firstLoop = false;
+			} 
+		}
+		else{
+			if (pair.first != c->index)
+			{
+				if (pair.second > CurrentOwnership[MostStock])
+				{
+					MostStock = pair.first;
+				}
+			}
+		}
+	}
+	AvailableStock = 100 - UnAvailableStock;
+	uint32 AvailableStockToBuy = 0; 
+	if(AvailableStock >= Amount){
+		AvailableStockToBuy = Amount;
+	}
+	uint32 StockLeftOverToBuy = Amount - AvailableStockToBuy;
+	Money CostPerStock = CompanyToBuyIn->current_stock_value;
+	Money StockPrice = AvailableStockToBuy * CostPerStock;
+	StockPrice *= .5;
+	StockPrice += StockLeftOverToBuy * CostPerStock;
+	c->money -= StockPrice;
+	if(CompanyToBuyIn->CompanyOwnership.find(c->index) == CompanyToBuyIn->CompanyOwnership.end()){
+		CompanyToBuyIn->CompanyOwnership[c->index] = Amount;
+	}
+	else{
+		CompanyToBuyIn->CompanyOwnership[c->index] += Amount;
+	}
+	if	(&MostStock != nullptr)
+	{
+		CompanyToBuyIn->CompanyOwnership[MostStock] -= StockLeftOverToBuy;
+	}
+	InvalidateCompanyWindows(c);
+	return CommandCost(EXPENSES_OTHER);
+}
+CommandCost CmdDecreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyToBuyInID)
+{
+	Company *c = Company::Get(_current_company);
+	Company *CompanyToBuyIn = Company::Get(CompanyToBuyInID);
+	if(CompanyToBuyIn->CompanyOwnership[c->index] == 0){
+		return CommandCost(STR_ERROR_MINIMUM_COMPANY_OWNERSHIP);
+	}
 
+	return CommandCost();
+}
 /**
  * In case of an unsafe unpause, we want the
  * user to confirm that it might crash.
