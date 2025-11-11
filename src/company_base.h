@@ -86,6 +86,8 @@ struct CompanyProperties {
 	Money current_loan = 0; ///< Amount of money borrowed from the bank.
 	Money max_loan = COMPANY_MAX_LOAN_DEFAULT; ///< Max allowed amount of the loan or COMPANY_MAX_LOAN_DEFAULT.
 
+	std::map<CompanyID, uint32_t> CompanyOwnership;
+
 	Colours colour = COLOUR_BEGIN; ///< Company colour.
 
 	uint8_t block_preview = 0; ///< Number of quarters that the company is not allowed to get new exclusive engine previews (see CompaniesGenStatistics).

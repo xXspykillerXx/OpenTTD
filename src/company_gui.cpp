@@ -55,6 +55,9 @@
 #include "dropdown_common_type.h"
 
 #include "safeguards.h"
+#include <iostream>
+#include <string>
+#include <map>
 
 
 /** Company GUI constants. */
@@ -1839,7 +1842,11 @@ static void ShowCompanyInfrastructure(CompanyID company)
 	if (!Company::IsValidID(company)) return;
 	AllocateWindowDescFront<CompanyInfrastructureWindow>(_company_infrastructure_desc, company);
 }
-
+static void ShowCompanyOwnership(CompanyID company)
+{
+	if (!Company::IsValidID(company)) return;
+	AllocateWindowDescFront<CompanyInfrastructureWindow>(_company_infrastructure_desc, company);
+}
 static constexpr std::initializer_list<NWidgetPart> _nested_company_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
@@ -1870,6 +1877,11 @@ static constexpr std::initializer_list<NWidgetPart> _nested_company_widgets = {
 						NWidget(NWID_SELECTION, INVALID_COLOUR, WID_C_SELECT_VIEW_BUILD_HQ),
 							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_C_VIEW_HQ), SetStringTip(STR_COMPANY_VIEW_VIEW_HQ_BUTTON, STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP),
 							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_C_BUILD_HQ), SetStringTip(STR_COMPANY_VIEW_BUILD_HQ_BUTTON, STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP),
+
+						EndContainer(),
+						NWidget(NWID_SELECTION, INVALID_COLOUR, WID_C_SELECT_COMPANY_OWNERSHIP),
+							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_C_COMPANY_OWNERSHIP), SetStringTip(STR_COMPANY_VIEW_COMPANY_OWNERSHIP, STR_COMPANY_VIEW_COMPANY_OWNERSHIP_TOOLTIP),
+
 						EndContainer(),
 						NWidget(NWID_SELECTION, INVALID_COLOUR, WID_C_SELECT_RELOCATE),
 							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_C_RELOCATE_HQ), SetStringTip(STR_COMPANY_VIEW_RELOCATE_HQ, STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP),
@@ -1933,7 +1945,7 @@ struct CompanyWindow : Window
 		/* Display planes of the #WID_C_SELECT_VIEW_BUILD_HQ selection widget. */
 		CWP_VB_VIEW = 0,  ///< Display the view button
 		CWP_VB_BUILD,     ///< Display the build button
-
+		
 		/* Display planes of the #WID_C_SELECT_RELOCATE selection widget. */
 		CWP_RELOCATE_SHOW = 0, ///< Show the relocate HQ button.
 		CWP_RELOCATE_HIDE,     ///< Hide the relocate HQ button.
@@ -1959,6 +1971,9 @@ struct CompanyWindow : Window
 
 			/* Build HQ button handling. */
 			reinit |= this->GetWidget<NWidgetStacked>(WID_C_SELECT_VIEW_BUILD_HQ)->SetDisplayedPlane((local && c->location_of_HQ == INVALID_TILE) ? CWP_VB_BUILD : CWP_VB_VIEW);
+
+			reinit |= this->GetWidget<NWidgetStacked>(WID_C_SELECT_COMPANY_OWNERSHIP)->SetDisplayedPlane(0);
+
 
 			this->SetWidgetDisabledState(WID_C_VIEW_HQ, c->location_of_HQ == INVALID_TILE);
 
@@ -2225,7 +2240,10 @@ struct CompanyWindow : Window
 			case WID_C_HOSTILE_TAKEOVER:
 				ShowBuyCompanyDialog(this->window_number, true);
 				break;
-
+			case WID_C_COMPANY_OWNERSHIP:
+				//ShowCompanyOwnership(this->window_number);
+				ShowCompanyOwnershipDialog(this->window_number);
+				break;
 			case WID_C_COMPANY_JOIN: {
 				this->query_widget = WID_C_COMPANY_JOIN;
 				CompanyID company = this->window_number;
@@ -2443,3 +2461,201 @@ void ShowBuyCompanyDialog(CompanyID company, bool hostile_takeover)
 		new BuyCompanyWindow(_buy_company_desc, company, hostile_takeover);
 	}
 }
+
+struct CompanyOwnershipWindow : Window {
+	CompanyOwnershipWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
+	{
+		this->InitNested(window_number);
+
+		const Company *c = Company::Get(this->window_number);
+		//this->company_value = hostile_takeover ? CalculateHostileTakeoverValue(c) : c->bankrupt_value;
+	}
+
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
+	{
+		
+	}
+
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
+	{
+		
+		switch (widget){
+			case WID_CO_CAPTION:
+				return GetString(STR_COMPANY_OWNERSHIP_TITLE, Company::Get(this->window_number)->index);
+			case WID_CO_SELL:
+				return GetString(STR_COMPANY_OWNERSHIP_SELL);
+			case WID_CO_BUY:
+				return GetString(STR_COMPANY_OWNERSHIP_BUY);
+		}
+		return "TEST";
+		
+		//switch (widget) {
+			//case WID_BC_CAPTION:
+				//return GetString(STR_ERROR_MESSAGE_CAPTION_OTHER_COMPANY, Company::Get(this->window_number)->index);
+
+			//default:
+				//return this->Window::GetWidgetString(widget, stringid);
+		//}
+	}
+	enum class CompanyOwnershipItemType : uint8_t {
+		Header, ///< Section header.
+		Spacer, ///< Spacer
+		Value, ///< Label with values.
+	};
+
+	struct CompanyOwnershipItem {
+		CompanyOwnershipItemType type;
+		StringID label;
+		uint count;
+	};
+
+	uint count_width = 0;
+	uint cost_width = 0;
+
+	mutable std::vector<CompanyOwnershipItem> list;
+	uint rank_width = 0; ///< The width of the rank
+	uint text_width = 0; ///< The width of the actual text
+	int line_height = 0; ///< Height of the text lines
+	
+	void DrawCompanyOwnershipWidget(){
+		const Company *c = Company::Get(this->window_number);
+	if (c == nullptr) return;
+	
+		//std::map<std::string, int> ownership = c->CompanyOwnership;
+		
+	}
+
+	void DrawWidget(const Rect &r, WidgetID widget) const override
+	{
+		switch (widget) {
+
+			case WID_CO_LIST: {
+				
+
+				//const Company *c = Company::Get(this->window_number);
+				const Company *c = Company::GetIfValid(this->window_number);
+				std::string name = c->name;
+				std::map<CompanyID, uint32> ownership = c->CompanyOwnership;
+				//ownership[c->index] = 100;
+		if (c == nullptr) return;
+		//this->list.emplace_back(CompanyOwnershipItemType::Header,GetString(STR_COMPANY_OWNERSHIP_VIEW_COMPANY,pair.first));
+
+				bool rtl = _current_text_dir == TD_RTL; // We allocate space from end-to-start so the label fills.
+		int line_height = GetCharacterHeight(FS_NORMAL);
+
+		Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
+		Rect countr = ir.WithWidth(this->count_width, !rtl);
+		Rect costr = ir.Indent(this->count_width + WidgetDimensions::scaled.hsep_wide, !rtl).WithWidth(this->cost_width, !rtl);
+		Rect labelr = ir.Indent(this->count_width + WidgetDimensions::scaled.hsep_wide + this->cost_width + WidgetDimensions::scaled.hsep_wide, !rtl);
+
+			//int icon_y_offset = (this->line_height - this->icon.height) / 2;
+			int text_y_offset = (this->line_height - GetCharacterHeight(FS_NORMAL)) / 2;
+
+			Rect rank_rect = ir.WithWidth(this->rank_width, rtl);
+			//DrawString(rank_rect.left, rank_rect.right, ir.top + text_y_offset, "Test");
+			//DrawString(ir.left, ir.right, labelr.top, "Test", TC_ORANGE);
+			//labelr.top += line_height;
+			//countr.top += line_height;
+			//costr.top += line_height;
+			//DrawString(ir.left, ir.right, labelr.top, "Test2", TC_ORANGE);
+		OTTD_Rect originalLeft = ir;
+		int keyValueHorizontalSpacing = 400; 
+		for (const auto& pair : ownership){
+			ir.left = originalLeft.left;
+			//Rect icon_rect = ir.Indent(this->rank_width + WidgetDimensions::scaled.hsep_wide, rtl).WithWidth(this->icon.width, rtl);
+			//Rect text_rect = ir.Indent(this->rank_width + this->icon.width + WidgetDimensions::scaled.hsep_wide * 2, rtl);
+			//DrawString(rank_rect.left, rank_rect.right, ir.top + text_y_offset, GetString(STR_COMPANY_OWNERSHIP_VIEW_COMPANY, pair.first));
+			Company *tempComp = Company::Get(pair.first);
+			std::string compname = tempComp->name;
+			if(&compname == nullptr || compname == "")
+				compname = "Unnamed";
+			DrawString(ir.left, ir.right, labelr.top, GetString(STR_COMPANY_OWNERSHIP_VIEW_COMPANY,compname), TC_ORANGE);
+			ir.left += keyValueHorizontalSpacing;
+			DrawString(ir.left, ir.right, labelr.top, GetString(STR_COMPANY_OWNERSHIP_VALUE,pair.second), TC_ORANGE);
+			labelr.top += line_height;
+			//this->list.emplace_back(CompanyOwnershipItemType::Value,STR_COMPANY_OWNERSHIP_VIEW_COMPANY, pair.second);
+			//this->list.emplace_back(CompanyOwnershipItemType::Spacer);
+		}
+		/* Update scrollbar. */
+		//this->GetScrollbar(WID_CI_SCROLLBAR)->SetCount(std::size(list));
+				//DrawStringMultiLine(r, GetString(this->hostile_takeover ? STR_BUY_COMPANY_HOSTILE_TAKEOVER : STR_BUY_COMPANY_MESSAGE, c->index, this->company_value), TC_FROMSTRING, SA_CENTER);
+				break;
+			}
+		}
+	}
+
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
+	{
+		switch (widget) {
+			case WID_CO_SELL:
+				this->Close();
+				break;
+
+			case WID_CO_BUY:
+				//Command<CMD_BUY_COMPANY>::Post(STR_ERROR_CAN_T_BUY_COMPANY, this->window_number, this->hostile_takeover);
+				break;
+		}
+	}
+
+	/**
+	 * Check on a regular interval if the company value has changed.
+	 */
+	const IntervalTimer<TimerWindow> rescale_interval = {std::chrono::seconds(3), [this](auto) {
+		/* Value can't change when in bankruptcy. */
+		//if (!this->hostile_takeover) return;
+
+		const Company *c = Company::Get(this->window_number);
+		auto new_value = CalculateHostileTakeoverValue(c);
+		if (new_value != this->company_value) {
+			this->company_value = new_value;
+			this->ReInit();
+		}
+	}};
+
+private:
+	//bool hostile_takeover = false; ///< Whether the window is showing a hostile takeover.
+	Money company_value{}; ///< The value of the company for which the user can buy it.
+};
+
+static constexpr std::initializer_list<NWidgetPart> _nested_company_ownership_widgets = {
+	NWidget(NWID_VERTICAL),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(WWT_CLOSEBOX, COLOUR_GREY),
+			NWidget(WWT_CAPTION, COLOUR_GREY, WID_CO_CAPTION),
+			NWidget(WWT_SHADEBOX, COLOUR_GREY),
+			NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
+			NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		EndContainer(),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(WWT_PANEL, COLOUR_GREY, WID_CO_LIST), SetFill(1, 1), SetResize(0, 1),
+					SetMinimalTextLines(5, WidgetDimensions::unscaled.framerect.Vertical()), SetScrollbar(WID_CO_SCROLLBAR),
+			EndContainer(),
+			NWidget(NWID_VERTICAL),
+				NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_CO_SCROLLBAR),
+				NWidget(WWT_RESIZEBOX, COLOUR_GREY),
+			EndContainer(),
+		EndContainer(),
+		NWidget(WWT_PANEL, COLOUR_GREY),
+		NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(100, WidgetDimensions::unscaled.hsep_wide, 100),
+		
+			NWidget(WWT_TEXTBTN, COLOUR_LIGHT_BLUE, WID_CO_SELL), SetMinimalSize(60, 12), SetStringTip(STR_COMPANY_OWNERSHIP_SELL), SetFill(1, 0),
+			NWidget(WWT_TEXTBTN, COLOUR_LIGHT_BLUE, WID_CO_BUY), SetMinimalSize(60, 12), SetStringTip(STR_COMPANY_OWNERSHIP_BUY), SetFill(1, 0),
+			EndContainer(),
+		EndContainer(),
+	EndContainer(),
+};
+
+static WindowDesc _company_ownership_desc(
+	WDP_AUTO, {}, 0, 0,
+	WC_COMPANY_OWNERSHIP, WC_NONE,
+	WindowDefaultFlag::Construction,
+	_nested_company_ownership_widgets
+);
+void ShowCompanyOwnershipDialog(CompanyID company)
+{
+	auto window = BringWindowToFrontById(WC_COMPANY_OWNERSHIP, company);
+	if (window == nullptr) {
+		new CompanyOwnershipWindow(_company_ownership_desc, company);
+	}
+}
+

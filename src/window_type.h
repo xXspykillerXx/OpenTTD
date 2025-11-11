@@ -54,6 +54,7 @@ enum WindowClass : uint16_t {
 	 *   - 0 = #MainWidgets
 	 */
 	WC_MAIN_WINDOW = WC_NONE,
+	WC_COMPANY_OWNERSHIP,
 
 	/**
 	 * Main toolbar (the long bar at the top); %Window numbers:
@@ -603,6 +604,12 @@ enum WindowClass : uint16_t {
 	 *   - #CompanyID = #BuyCompanyWidgets
 	 */
 	WC_BUY_COMPANY,
+
+	/**
+	 * Company ownership overview; %Window numbers:
+	 *   - #CompanyID = #CompanyOwnershipWidgets
+	 */
+	WO_COMPANY_Ownership,
 
 	/**
 	 * Engine preview window; %Window numbers:

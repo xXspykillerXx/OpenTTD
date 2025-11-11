@@ -611,7 +611,7 @@ Company *DoStartupNewCompany(bool is_ai, CompanyID company = CompanyID::Invalid(
 	}
 
 	c->colour = colour;
-
+	c->CompanyOwnership[c->index] = 100;
 	ResetCompanyLivery(c);
 	_company_colours[c->index] = c->colour;
 

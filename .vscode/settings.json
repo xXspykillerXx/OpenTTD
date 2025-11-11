@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "map": "cpp",
+        "__tree": "cpp",
+        "any": "cpp",
+        "optional": "cpp",
+        "initializer_list": "cpp",
+        "typeinfo": "cpp",
+        "vector": "cpp",
+        "array": "cpp",
+        "variant": "cpp",
+        "queue": "cpp",
+        "stack": "cpp"
+    }
+}

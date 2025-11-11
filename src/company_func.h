@@ -20,6 +20,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner);
 std::array<StringParameter, 2> GetParamsForOwnedBy(Owner owner, TileIndex tile);
 void SetLocalCompany(CompanyID new_company);
 void ShowBuyCompanyDialog(CompanyID company, bool hostile_takeover);
+void ShowCompanyOwnershipDialog(CompanyID company);
 void CompanyAdminUpdate(const Company *company);
 void CompanyAdminBankrupt(CompanyID company_id);
 void UpdateLandscapingLimits();

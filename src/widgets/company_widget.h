@@ -35,6 +35,8 @@ enum CompanyWidgets : WidgetID {
 	WID_C_SELECT_VIEW_BUILD_HQ,       ///< Panel about HQ.
 	WID_C_VIEW_HQ,                    ///< Button to view the HQ.
 	WID_C_BUILD_HQ,                   ///< Button to build the HQ.
+	WID_C_COMPANY_OWNERSHIP,		  ///< Button to manage company ownership.
+	WID_C_SELECT_COMPANY_OWNERSHIP,   ///< Panel about Company Ownership
 
 	WID_C_SELECT_RELOCATE,            ///< Panel about 'Relocate HQ'.
 	WID_C_RELOCATE_HQ,                ///< Button to relocate the HQ.
@@ -124,7 +126,9 @@ enum CompanyInfrastructureWidgets : WidgetID {
 	WID_CI_LIST, ///< Infrastructure list.
 	WID_CI_SCROLLBAR, ///< Infrastructure list scrollbar.
 };
-
+//enum CompanyOwnershipWidgets : WidgetID{
+//	WID_CO_SCROLLBAR, ///< Ownership list scrollbar.
+//};
 /** Widgets of the #BuyCompanyWindow class. */
 enum BuyCompanyWidgets : WidgetID {
 	WID_BC_CAPTION,  ///< Caption of window.
@@ -133,5 +137,12 @@ enum BuyCompanyWidgets : WidgetID {
 	WID_BC_NO,       ///< No button.
 	WID_BC_YES,      ///< Yes button.
 };
-
+/** Widgets of the #CompanyOwnershipWindow class. */
+enum CompanyOwnershipWidgets : WidgetID {
+	WID_CO_CAPTION, ///< Caption of window.
+	WID_CO_LIST, ///< Ownership list.
+	WID_CO_SCROLLBAR, ///< Ownership list scrollbar.
+	WID_CO_SELL, ///< Ownership Buy Button
+	WID_CO_BUY, ///< Ownership Sell Button
+};
 #endif /* WIDGETS_COMPANY_WIDGET_H */

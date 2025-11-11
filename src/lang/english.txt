@@ -4004,6 +4004,14 @@ STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Give mon
 STR_COMPANY_VIEW_GIVE_MONEY_TOOLTIP                             :{BLACK}Give money to this company
 STR_COMPANY_VIEW_HOSTILE_TAKEOVER_BUTTON                        :{BLACK}Hostile takeover
 STR_COMPANY_VIEW_HOSTILE_TAKEOVER_TOOLTIP                       :{BLACK}Do a hostile takeover of this company
+STR_COMPANY_VIEW_COMPANY_OWNERSHIP                              :{BLACK}Company Ownership
+STR_COMPANY_VIEW_COMPANY_OWNERSHIP_TOOLTIP                      :{BLACK}Manage company ownership
+STR_COMPANY_OWNERSHIP_TITLE                                     :{BLACK}{COMPANY} Ownership
+STR_COMPANY_OWNERSHIP_VIEW_CAPTION                              :{WHITE}Ownership of {COMPANY}
+STR_COMPANY_OWNERSHIP_VIEW_COMPANY                              :{WHITE}{RAW_STRING}
+STR_COMPANY_OWNERSHIP_VALUE                                     :{YELLOW}{NUM}
+STR_COMPANY_OWNERSHIP_BUY                                       :{WHITE}Buy 10%
+STR_COMPANY_OWNERSHIP_SELL                                      :{WHITE}Sell 10%
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}New Face
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Select new face for manager
