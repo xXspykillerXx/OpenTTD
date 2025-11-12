@@ -288,6 +288,7 @@ enum Commands : uint8_t {
 
 	CMD_BUY_OWNERSHIP,				  ///< buy ownership in a company
 	CMD_SELL_OWNERSHIP,				  ///< sell ownership in a company
+	CMD_COMPANY_OWNERSHIP_MERGE,       ///< Merge company to another company if enough ownership
 
 	CMD_FOUND_TOWN,                   ///< found a town
 	CMD_RENAME_TOWN,                  ///< rename a town

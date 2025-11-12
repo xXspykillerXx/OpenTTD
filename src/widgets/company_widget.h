@@ -143,6 +143,7 @@ enum CompanyOwnershipWidgets : WidgetID {
 	WID_CO_LIST, ///< Ownership list.
 	WID_CO_SCROLLBAR, ///< Ownership list scrollbar.
 	WID_CO_SELL, ///< Ownership Buy Button
+	WID_CO_MERGE, ///< Merge company based on ownership
 	WID_CO_BUY, ///< Ownership Sell Button
 };
 #endif /* WIDGETS_COMPANY_WIDGET_H */

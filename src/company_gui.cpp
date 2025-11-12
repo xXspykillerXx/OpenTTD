@@ -2484,6 +2484,8 @@ struct CompanyOwnershipWindow : Window {
 				return GetString(STR_COMPANY_OWNERSHIP_TITLE, Company::Get(this->window_number)->index);
 			case WID_CO_SELL:
 				return GetString(STR_COMPANY_OWNERSHIP_SELL);
+			case WID_CO_MERGE:
+				return GetString(STR_COMPANY_OWNERSHIP_MERGE);
 			case WID_CO_BUY:
 				return GetString(STR_COMPANY_OWNERSHIP_BUY);
 		}
@@ -2600,6 +2602,12 @@ struct CompanyOwnershipWindow : Window {
 				Command<CMD_SELL_OWNERSHIP>::Post(STR_ERROR_CAN_T_BUY_COMPANY_OWNERSHIP, c->index, 5);
 				break;
 			}
+			case WID_CO_MERGE:
+			{
+				Command<CMD_COMPANY_OWNERSHIP_MERGE>::Post(STR_ERROR_CAN_T_BUY_COMPANY_OWNERSHIP, c->index);
+				this->Close();
+				break;
+			}
 			case WID_CO_BUY:
 			{
 				Command<CMD_BUY_OWNERSHIP>::Post(STR_ERROR_CAN_T_BUY_COMPANY_OWNERSHIP, c->index, 5);
@@ -2655,6 +2663,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_company_ownership_wi
 		NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(100, WidgetDimensions::unscaled.hsep_wide, 100),
 		
 			NWidget(WWT_TEXTBTN, COLOUR_LIGHT_BLUE, WID_CO_SELL), SetMinimalSize(60, 12), SetStringTip(STR_COMPANY_OWNERSHIP_SELL), SetFill(1, 0),
+			NWidget(WWT_TEXTBTN, COLOUR_LIGHT_BLUE, WID_CO_MERGE), SetMinimalSize(60, 12), SetStringTip(STR_COMPANY_OWNERSHIP_MERGE), SetFill(1, 0),
 			NWidget(WWT_TEXTBTN, COLOUR_LIGHT_BLUE, WID_CO_BUY), SetMinimalSize(60, 12), SetStringTip(STR_COMPANY_OWNERSHIP_BUY), SetFill(1, 0),
 			EndContainer(),
 		EndContainer(),

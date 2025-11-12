@@ -26,6 +26,9 @@
 #include "table/strings.h"
 
 #include "safeguards.h"
+#include "news_func.h"
+#include "ai/ai.hpp"
+#include "game/game.hpp"
 
 /**
  * Increase the loan of your company.
@@ -219,6 +222,60 @@ CommandCost CmdDecreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 	InvalidateWindowData(WC_COMPANY_OWNERSHIP,CompanyToSell->index,1);
 	return CommandCost();
 }
+static void DoAcquireCompany(CompanyID ci)
+{
+	Company *c = Company::Get(ci);
+
+	//auto cni = std::make_unique<CompanyNewsInformation>(STR_NEWS_COMPANY_MERGER_TITLE, c, Company::Get(_current_company));
+	//EncodedString headline = true
+	//	? GetEncodedString(STR_NEWS_MERGER_TAKEOVER_TITLE, cni->company_name, cni->other_company_name)
+	//	: GetEncodedString(STR_NEWS_COMPANY_MERGER_DESCRIPTION, cni->company_name, cni->other_company_name, c->bankrupt_value);
+	//AddCompanyNewsItem(std::move(headline), std::move(cni));
+	//AI::BroadcastNewEvent(new ScriptEventCompanyMerger(ci, _current_company));
+	//Game::NewEvent(new ScriptEventCompanyMerger(ci, _current_company));
+
+	ChangeOwnershipOfCompanyItems(ci, _current_company);
+
+	if (c->is_ai) AI::Stop(c->index);
+
+	CloseCompanyWindows(ci);
+	InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
+	InvalidateWindowClassesData(WC_SHIPS_LIST, 0);
+	InvalidateWindowClassesData(WC_ROADVEH_LIST, 0);
+	InvalidateWindowClassesData(WC_AIRCRAFT_LIST, 0);
+
+	delete c;
+}
+CommandCost CmdCompanyMerge(DoCommandFlags flags, CompanyID CompanyToMergeID)
+{
+	Company *c = Company::Get(_current_company);
+	if(c->index == CompanyToMergeID)
+		return CommandCost(STR_ERROR_SAME_COMPANY_OWNERSHIP_MERGE);
+	Company *CompanyToMerge = Company::Get(CompanyToMergeID);
+	if(CompanyToMerge->CompanyOwnership[c->index] <=50)
+		return CommandCost(STR_ERROR_NOT_ENOUGH_COMPANY_OWNERSHIP);
+	//ChangeOwnershipOfCompanyItems(CompanyToMergeID, c->index);
+	ChangeOwnershipOfCompanyItems(CompanyToMerge->index, c->index);
+	if (c->is_ai) AI::Stop(c->index);
+	CloseCompanyWindows(CompanyToMerge->index);
+	InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
+	InvalidateWindowClassesData(WC_SHIPS_LIST, 0);
+	InvalidateWindowClassesData(WC_ROADVEH_LIST, 0);
+	InvalidateWindowClassesData(WC_AIRCRAFT_LIST, 0);
+	if (flags.Test(DoCommandFlag::Execute)) {
+		auto cni = std::make_unique<CompanyNewsInformation>(STR_NEWS_COMPANY_MERGER_TITLE, CompanyToMerge, Company::Get(_current_company));
+		EncodedString headline = true
+		? GetEncodedString(STR_NEWS_MERGER_TAKEOVER_TITLE, cni->company_name, cni->other_company_name)
+		: GetEncodedString(STR_NEWS_COMPANY_MERGER_DESCRIPTION, cni->company_name, cni->other_company_name, c->bankrupt_value);
+		AddCompanyNewsItem(std::move(headline), std::move(cni));
+		AI::BroadcastNewEvent(new ScriptEventCompanyMerger(CompanyToMerge->index, _current_company));
+		Game::NewEvent(new ScriptEventCompanyMerger(CompanyToMerge->index, _current_company));
+		delete CompanyToMerge;
+	}
+	
+	return CommandCost();
+}
+
 /**
  * In case of an unsafe unpause, we want the
  * user to confirm that it might crash.
