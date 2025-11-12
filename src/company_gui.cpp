@@ -2592,17 +2592,20 @@ struct CompanyOwnershipWindow : Window {
 
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
+		const Company *c = Company::GetIfValid(this->window_number);
 		switch (widget) {
 			case WID_CO_SELL:
-				this->Close();
+			{
+				
+				Command<CMD_SELL_OWNERSHIP>::Post(STR_ERROR_CAN_T_BUY_COMPANY_OWNERSHIP, c->index, 5);
 				break;
-
+			}
 			case WID_CO_BUY:
-				//Command<CMD_BUY_COMPANY>::Post(STR_ERROR_CAN_T_BUY_COMPANY, this->window_number, this->hostile_takeover);
-				const Company *c = Company::GetIfValid(this->window_number);
-				Command<CMD_BUY_OWNERSHIP>::Post(STR_ERROR_CAN_T_BUY_COMPANY_OWNERSHIP, c->index, 10);
-				this->ReInit();
+			{
+				Command<CMD_BUY_OWNERSHIP>::Post(STR_ERROR_CAN_T_BUY_COMPANY_OWNERSHIP, c->index, 5);
+				//this->ReInit();
 				break;
+			}
 		}
 	}
 	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override

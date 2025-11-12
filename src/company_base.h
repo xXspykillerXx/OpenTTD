@@ -87,7 +87,7 @@ struct CompanyProperties {
 	Money max_loan = COMPANY_MAX_LOAN_DEFAULT; ///< Max allowed amount of the loan or COMPANY_MAX_LOAN_DEFAULT.
 
 	std::map<CompanyID, uint32_t> CompanyOwnership;
-	Money current_stock_value = 0;
+	Money current_stock_value = 1000;
 
 	Colours colour = COLOUR_BEGIN; ///< Company colour.
 

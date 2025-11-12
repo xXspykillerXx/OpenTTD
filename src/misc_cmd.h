@@ -25,8 +25,8 @@ CommandCost CmdChangeBankBalance(DoCommandFlags flags, TileIndex tile, Money del
 CommandCost CmdIncreaseLoan(DoCommandFlags flags, LoanCommand cmd, Money amount);
 CommandCost CmdDecreaseLoan(DoCommandFlags flags, LoanCommand cmd, Money amount);
 CommandCost CmdSetCompanyMaxLoan(DoCommandFlags flags, CompanyID company, Money amount);
-CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyToBuyInID, uint32 amount);
-CommandCost CmdDecreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyToBuyInID);
+CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyToBuyInID, int amount);
+CommandCost CmdDecreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyToSellID, int amount);
 CommandCost CmdPause(DoCommandFlags flags, PauseMode mode, bool pause);
 
 DEF_CMD_TRAIT(CMD_MONEY_CHEAT,          CmdMoneyCheat,        CommandFlags({CommandFlag::Offline, CommandFlag::NoEst}), CMDT_CHEAT)

@@ -141,7 +141,7 @@ CommandCost CmdSetCompanyMaxLoan(DoCommandFlags flags, CompanyID company, Money 
 	}
 	return CommandCost();
 }
-CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyToBuyInID, uint32 Amount)
+CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyToBuyInID, int Amount)
 {
 	Company *c = Company::Get(_current_company);
 	Company *CompanyToBuyIn = Company::Get(CompanyToBuyInID);
@@ -181,8 +181,12 @@ CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 	uint32 StockLeftOverToBuy = Amount - AvailableStockToBuy;
 	Money CostPerStock = CompanyToBuyIn->current_stock_value;
 	Money StockPrice = AvailableStockToBuy * CostPerStock;
-	StockPrice *= .5;
-	StockPrice += StockLeftOverToBuy * CostPerStock;
+	int AvailableStockDiscount = 1;
+	StockPrice = StockPrice/AvailableStockDiscount;
+	int StockPriceOtherCompanyModifier = 25;
+	Money CurrentCostFromOthercompanies = (CostPerStock * StockLeftOverToBuy);
+	Money AddedCost = (CurrentCostFromOthercompanies * StockPriceOtherCompanyModifier) / 100;
+	StockPrice += (CurrentCostFromOthercompanies + AddedCost);
 	c->money -= StockPrice;
 	if(CompanyToBuyIn->CompanyOwnership.find(c->index) == CompanyToBuyIn->CompanyOwnership.end()){
 		CompanyToBuyIn->CompanyOwnership[c->index] = Amount;
@@ -195,16 +199,24 @@ CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 		CompanyToBuyIn->CompanyOwnership[MostStock] -= StockLeftOverToBuy;
 	}
 	InvalidateCompanyWindows(c);
+	InvalidateCompanyWindows(CompanyToBuyIn);
+	InvalidateWindowData(WC_COMPANY_OWNERSHIP,CompanyToBuyIn->index,1);
+	
 	return CommandCost(EXPENSES_OTHER);
 }
-CommandCost CmdDecreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyToBuyInID)
+CommandCost CmdDecreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyToSellID, int amount)
 {
 	Company *c = Company::Get(_current_company);
-	Company *CompanyToBuyIn = Company::Get(CompanyToBuyInID);
-	if(CompanyToBuyIn->CompanyOwnership[c->index] == 0){
+	Company *CompanyToSell = Company::Get(CompanyToSellID);
+	if(CompanyToSell->CompanyOwnership[c->index] < amount){
 		return CommandCost(STR_ERROR_MINIMUM_COMPANY_OWNERSHIP);
 	}
-
+	Money ValueSold = c->current_stock_value * amount;
+	c->money += ValueSold;
+	CompanyToSell->CompanyOwnership[c->index] -= amount;
+	InvalidateCompanyWindows(c);
+	InvalidateCompanyWindows(CompanyToSell);
+	InvalidateWindowData(WC_COMPANY_OWNERSHIP,CompanyToSell->index,1);
 	return CommandCost();
 }
 /**
