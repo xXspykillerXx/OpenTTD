@@ -167,6 +167,7 @@ Money CalculateCompanyStockValue(Company *c){
 		int CanalValue = 1000;
 		Money NewStockValue = 0;
 		NewStockValue += (c->current_loan/LoanStockValueModifier);
+		NewStockValue += (c->money-c->current_loan);
 		NewStockValue += (c->infrastructure.GetRailTotal() * RailValue);
 		NewStockValue += (c->infrastructure.GetRoadTotal() * RoadValue);
 		NewStockValue += (c->infrastructure.GetTramTotal() * RoadValue);
@@ -897,7 +898,49 @@ static void UpdateCompaniesStockValue()
 }
 static void PayOutCompanyDividends()
 {
-
+	for (Company *c : Company::Iterate()) {
+		Money TotalAmountToPayout = 0;
+		Money LastQuarterIncome = c->old_economy.back().income;
+		Money CurrentMoney = c->money;
+		for (const auto& pair : c->CompanyOwnership){
+			if(pair.first == c->index)
+				continue;
+			TotalAmountToPayout += ((LastQuarterIncome * pair.second)/100);
+		}
+		if(CurrentMoney < TotalAmountToPayout){
+			if(c->current_stock_holder_confidence <= 0)
+			{
+				c->current_stock_holder_confidence--;
+			}
+			for (const auto& pair : c->CompanyOwnership){
+			if(pair.first == c->index)
+				continue;
+				Money AmountToPay = ((CurrentMoney * pair.second)/100);
+				_current_company = c->index;
+				SubtractMoneyFromCompany(CommandCost(EXPENSES_DIVIDEND_PAYOUT, AmountToPay));
+				//c->money -= AmountToPay;
+				Company *CompanyToBePaid = Company::Get(pair.first);
+				CompanyToBePaid->money += AmountToPay;
+			}
+		}
+		if(CurrentMoney >= TotalAmountToPayout){
+			if(c->current_stock_holder_confidence >= 100)
+			{
+				c->current_stock_holder_confidence++;
+			}
+			for (const auto& pair : c->CompanyOwnership){
+			if(pair.first == c->index)
+				continue;
+				Money AmountToPay = ((LastQuarterIncome * pair.second)/100);
+				_current_company = c->index;
+				SubtractMoneyFromCompany(CommandCost(EXPENSES_DIVIDEND_PAYOUT, AmountToPay));
+				//c->money -= AmountToPay;
+				Company *CompanyToBePaid = Company::Get(pair.first);
+				CompanyToBePaid->money += AmountToPay;
+			}
+		}
+		
+	}
 }
 
 /**
@@ -2018,6 +2061,11 @@ static const IntervalTimer<TimerGameEconomy> _economy_companies_monthly({ TimerG
 	CompaniesPayInterest();
 	HandleEconomyFluctuations();
 	UpdateCompaniesStockValue();
+	//PayOutCompanyDividends();
+});
+static const IntervalTimer<TimerGameEconomy> _economy_companies_quarterly({ TimerGameEconomy::QUARTER, TimerGameEconomy::Priority::COMPANY }, [](auto)
+{
+	PayOutCompanyDividends();
 });
 
 static void DoAcquireCompany(Company *c, bool hostile_takeover)

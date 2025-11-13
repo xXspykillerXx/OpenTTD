@@ -80,6 +80,7 @@ static const std::initializer_list<ExpensesType> _expenses_list_operating_costs 
 	EXPENSES_SHIP_RUN,
 	EXPENSES_PROPERTY,
 	EXPENSES_LOAN_INTEREST,
+	EXPENSES_DIVIDEND_PAYOUT,
 };
 
 /** List of capital expenses. */

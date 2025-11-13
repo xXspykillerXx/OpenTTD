@@ -124,6 +124,7 @@ public:
 		EXPENSES_AIRCRAFT_INC = ::EXPENSES_AIRCRAFT_REVENUE, ///< Revenue from aircraft.
 		EXPENSES_SHIP_INC     = ::EXPENSES_SHIP_REVENUE,     ///< Revenue from ships.
 		EXPENSES_LOAN_INT     = ::EXPENSES_LOAN_INTEREST,    ///< Interest payments over the loan.
+		EXPENSES_DIVIDEND_PAY = ::EXPENSES_DIVIDEND_PAYOUT,  ///< Dividend Payout
 		EXPENSES_OTHER        = ::EXPENSES_OTHER,            ///< Other expenses.
 		EXPENSES_INVALID      = ::INVALID_EXPENSES,          ///< Invalid expense type.
 	};

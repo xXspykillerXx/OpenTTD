@@ -3946,6 +3946,7 @@ STR_FINANCES_SECTION_ROAD_VEHICLE_REVENUE                       :{GOLD}Road Vehi
 STR_FINANCES_SECTION_AIRCRAFT_REVENUE                           :{GOLD}Aircraft
 STR_FINANCES_SECTION_SHIP_REVENUE                               :{GOLD}Ships
 STR_FINANCES_SECTION_LOAN_INTEREST                              :{GOLD}Loan Interest
+STR_FINANCES_SECTION_DIVIDEND_PAYOUT                            :{GOLD}Dividend Payout
 STR_FINANCES_SECTION_OTHER                                      :{GOLD}Other
 
 STR_FINANCES_TOTAL_CAPTION                                      :{WHITE}Total
