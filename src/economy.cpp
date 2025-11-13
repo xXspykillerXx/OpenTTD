@@ -862,7 +862,38 @@ static void HandleEconomyFluctuations()
 		AddNewsItem(GetEncodedString(STR_NEWS_END_OF_RECESSION), NewsType::Economy, NewsStyle::Normal, {});
 	}
 }
+static void UpdateCompaniesStockValue()
+{
+	//Backup<CompanyID> cur_company(_current_company);
+	for (Company *c : Company::Iterate()) {
+		int LoanStockValueModifier = 50;
+		int RailValue = 10;
+		int RoadValue = 5;
+		int AirPortValue = 5000;
+		int StationValue = 2500;
+		int SignalValue = 2;
+		int CanalValue = 1000;
+		Money NewStockValue = 0;
+		NewStockValue += (c->current_loan + ((c->current_loan * LoanStockValueModifier)/100));
+		NewStockValue += (c->infrastructure.GetRailTotal() * RailValue);
+		NewStockValue += (c->infrastructure.GetRoadTotal() * RoadValue);
+		NewStockValue += (c->infrastructure.GetTramTotal() * RoadValue);
+		NewStockValue += (c->infrastructure.airport * AirPortValue);
+		NewStockValue += (c->infrastructure.station * StationValue);
+		NewStockValue += (c->infrastructure.signal * SignalValue);
+		NewStockValue += (c->infrastructure.water * CanalValue);
 
+		for (const Vehicle *v : Vehicle::Iterate()) {
+			if (v->owner != c->index) continue;
+			NewStockValue += v->value;
+		}
+		c->current_stock_value = NewStockValue/100;
+	}
+}
+static void PayOutCompanyDividends()
+{
+
+}
 
 /**
  * Reset changes to the price base multipliers.
@@ -1981,6 +2012,7 @@ static const IntervalTimer<TimerGameEconomy> _economy_companies_monthly({ TimerG
 	CompaniesGenStatistics();
 	CompaniesPayInterest();
 	HandleEconomyFluctuations();
+	UpdateCompaniesStockValue();
 });
 
 static void DoAcquireCompany(Company *c, bool hostile_takeover)
