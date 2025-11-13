@@ -158,7 +158,7 @@ Money CalculateCompanyValue(const Company *c, bool including_loan)
 	return std::max<Money>(value, 1);
 }
 Money CalculateCompanyStockValue(Company *c){
-	int LoanStockValueModifier = 50;
+	int LoanStockValueModifier = 2;
 		int RailValue = 10;
 		int RoadValue = 5;
 		int AirPortValue = 5000;
@@ -166,7 +166,7 @@ Money CalculateCompanyStockValue(Company *c){
 		int SignalValue = 2;
 		int CanalValue = 1000;
 		Money NewStockValue = 0;
-		NewStockValue += (c->current_loan + ((c->current_loan * LoanStockValueModifier)/100));
+		NewStockValue += (c->current_loan/LoanStockValueModifier);
 		NewStockValue += (c->infrastructure.GetRailTotal() * RailValue);
 		NewStockValue += (c->infrastructure.GetRoadTotal() * RoadValue);
 		NewStockValue += (c->infrastructure.GetTramTotal() * RoadValue);
