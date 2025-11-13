@@ -88,6 +88,7 @@ struct CompanyProperties {
 
 	std::map<CompanyID, uint32_t> CompanyOwnership;
 	Money current_stock_value = 1000;
+	uint32_t current_stock_holder_confidence = 100;
 
 	Colours colour = COLOUR_BEGIN; ///< Company colour.
 
@@ -199,6 +200,7 @@ struct Company : CompanyProperties, CompanyPool::PoolItem<&_company_pool> {
 };
 
 Money CalculateCompanyValue(const Company *c, bool including_loan = true);
+Money CalculateCompanyStockValue(Company *c);
 Money CalculateHostileTakeoverValue(const Company *c);
 
 extern uint _cur_company_tick_index;

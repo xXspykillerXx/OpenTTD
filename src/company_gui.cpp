@@ -1891,7 +1891,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_company_widgets = {
 				EndContainer(),
 
 				NWidget(WWT_TEXT, INVALID_COLOUR, WID_C_DESC_COMPANY_VALUE), SetFill(1, 0),
-
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_C_DESC_COMPANY_STOCK_VALUE), SetFill(1, 0),
 				NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
 					NWidget(WWT_TEXT, INVALID_COLOUR, WID_C_DESC_INFRASTRUCTURE), SetStringTip(STR_COMPANY_VIEW_INFRASTRUCTURE),  SetAlignment(SA_LEFT | SA_TOP),
 					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_C_DESC_INFRASTRUCTURE_COUNTS), SetMinimalTextLines(5, 0), SetFill(1, 0),
@@ -2018,7 +2018,6 @@ struct CompanyWindow : Window
 				/* INT64_MAX is arguably the maximum company value */
 				size.width = GetStringBoundingBox(GetString(STR_COMPANY_VIEW_COMPANY_VALUE, INT64_MAX)).width;
 				break;
-
 			case WID_C_DESC_VEHICLE_COUNTS: {
 				uint64_t max_value = GetParamMaxValue(5000); // Maximum number of vehicles
 				for (const auto &count_string : _company_view_vehicle_count_strings) {
@@ -2160,7 +2159,13 @@ struct CompanyWindow : Window
 			}
 
 			case WID_C_DESC_COMPANY_VALUE:
+			{
 				return GetString(STR_COMPANY_VIEW_COMPANY_VALUE, CalculateCompanyValue(Company::Get(this->window_number)));
+			}
+				
+			
+			case WID_C_DESC_COMPANY_STOCK_VALUE:
+				return GetString(STR_COMPANY_VIEW_COMPANY_STOCK_VALUE, CalculateCompanyStockValue(Company::Get(this->window_number))); 
 
 			default:
 				return this->Window::GetWidgetString(widget, stringid);

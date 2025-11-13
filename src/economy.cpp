@@ -157,7 +157,32 @@ Money CalculateCompanyValue(const Company *c, bool including_loan)
 
 	return std::max<Money>(value, 1);
 }
+Money CalculateCompanyStockValue(Company *c){
+	int LoanStockValueModifier = 50;
+		int RailValue = 10;
+		int RoadValue = 5;
+		int AirPortValue = 5000;
+		int StationValue = 2500;
+		int SignalValue = 2;
+		int CanalValue = 1000;
+		Money NewStockValue = 0;
+		NewStockValue += (c->current_loan + ((c->current_loan * LoanStockValueModifier)/100));
+		NewStockValue += (c->infrastructure.GetRailTotal() * RailValue);
+		NewStockValue += (c->infrastructure.GetRoadTotal() * RoadValue);
+		NewStockValue += (c->infrastructure.GetTramTotal() * RoadValue);
+		NewStockValue += (c->infrastructure.airport * AirPortValue);
+		NewStockValue += (c->infrastructure.station * StationValue);
+		NewStockValue += (c->infrastructure.signal * SignalValue);
+		NewStockValue += (c->infrastructure.water * CanalValue);
 
+		for (const Vehicle *v : Vehicle::Iterate()) {
+			if (v->owner != c->index) continue;
+			NewStockValue += v->value;
+		}
+		NewStockValue = ((NewStockValue*c->current_stock_holder_confidence)/100);
+		c->current_stock_value = NewStockValue/100;
+		return c->current_stock_value;
+}
 /**
  * Calculate what you have to pay to take over a company.
  *
@@ -866,28 +891,8 @@ static void UpdateCompaniesStockValue()
 {
 	//Backup<CompanyID> cur_company(_current_company);
 	for (Company *c : Company::Iterate()) {
-		int LoanStockValueModifier = 50;
-		int RailValue = 10;
-		int RoadValue = 5;
-		int AirPortValue = 5000;
-		int StationValue = 2500;
-		int SignalValue = 2;
-		int CanalValue = 1000;
-		Money NewStockValue = 0;
-		NewStockValue += (c->current_loan + ((c->current_loan * LoanStockValueModifier)/100));
-		NewStockValue += (c->infrastructure.GetRailTotal() * RailValue);
-		NewStockValue += (c->infrastructure.GetRoadTotal() * RoadValue);
-		NewStockValue += (c->infrastructure.GetTramTotal() * RoadValue);
-		NewStockValue += (c->infrastructure.airport * AirPortValue);
-		NewStockValue += (c->infrastructure.station * StationValue);
-		NewStockValue += (c->infrastructure.signal * SignalValue);
-		NewStockValue += (c->infrastructure.water * CanalValue);
-
-		for (const Vehicle *v : Vehicle::Iterate()) {
-			if (v->owner != c->index) continue;
-			NewStockValue += v->value;
-		}
-		c->current_stock_value = NewStockValue/100;
+		
+		c->current_stock_value = CalculateCompanyStockValue(c);
 	}
 }
 static void PayOutCompanyDividends()

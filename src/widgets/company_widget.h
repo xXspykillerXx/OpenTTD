@@ -23,6 +23,7 @@ enum CompanyWidgets : WidgetID {
 	WID_C_DESC_VEHICLE,               ///< Vehicles.
 	WID_C_DESC_VEHICLE_COUNTS,        ///< Vehicle count.
 	WID_C_DESC_COMPANY_VALUE,         ///< Company value.
+	WID_C_DESC_COMPANY_STOCK_VALUE,   ///< Company stock value
 	WID_C_DESC_INFRASTRUCTURE,        ///< Infrastructure.
 	WID_C_DESC_INFRASTRUCTURE_COUNTS, ///< Infrastructure count.
 
