@@ -189,6 +189,8 @@ CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 	int StockPriceOtherCompanyModifier = 25;
 	Money CurrentCostFromOthercompanies = (CostPerStock * StockLeftOverToBuy);
 	Money AddedCost = (CurrentCostFromOthercompanies * StockPriceOtherCompanyModifier) / 100;
+	if (flags.Test(DoCommandFlag::Execute))
+	{
 	StockPrice += (CurrentCostFromOthercompanies + AddedCost);
 	c->money -= StockPrice;
 	if(CompanyToBuyIn->CompanyOwnership.find(c->index) == CompanyToBuyIn->CompanyOwnership.end()){
@@ -204,7 +206,7 @@ CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 	InvalidateCompanyWindows(c);
 	InvalidateCompanyWindows(CompanyToBuyIn);
 	InvalidateWindowData(WC_COMPANY_OWNERSHIP,CompanyToBuyIn->index,1);
-	
+	}
 	return CommandCost(EXPENSES_OTHER);
 }
 CommandCost CmdDecreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyToSellID, int amount)
@@ -214,12 +216,15 @@ CommandCost CmdDecreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 	if(CompanyToSell->CompanyOwnership[c->index] < amount){
 		return CommandCost(STR_ERROR_MINIMUM_COMPANY_OWNERSHIP);
 	}
+	if (flags.Test(DoCommandFlag::Execute))
+	{
 	Money ValueSold = c->current_stock_value * amount;
 	c->money += ValueSold;
 	CompanyToSell->CompanyOwnership[c->index] -= amount;
 	InvalidateCompanyWindows(c);
 	InvalidateCompanyWindows(CompanyToSell);
 	InvalidateWindowData(WC_COMPANY_OWNERSHIP,CompanyToSell->index,1);
+}
 	return CommandCost();
 }
 static void DoAcquireCompany(CompanyID ci)
@@ -254,15 +259,38 @@ CommandCost CmdCompanyMerge(DoCommandFlags flags, CompanyID CompanyToMergeID)
 	Company *CompanyToMerge = Company::Get(CompanyToMergeID);
 	if(CompanyToMerge->CompanyOwnership[c->index] <=50)
 		return CommandCost(STR_ERROR_NOT_ENOUGH_COMPANY_OWNERSHIP);
+	Money CostToMerge = 0;
+	uint32 AmountToBuyFromCompetitors = 0;
+	for (const auto &pair : CompanyToMerge->CompanyOwnership)
+	{
+		if(pair.first == c->index){
+			continue;
+		}
+		AmountToBuyFromCompetitors += pair.second;
+		
+	}
+	CostToMerge = AmountToBuyFromCompetitors * CompanyToMerge->current_stock_value;
+	int StockPriceOtherCompanyModifier = 25;
+	CostToMerge += ((CostToMerge * StockPriceOtherCompanyModifier) / 100);
+	uint32 AvailableStock = 100 - AmountToBuyFromCompetitors - CompanyToMerge->CompanyOwnership[c->index];
+	CostToMerge += (AvailableStock * CompanyToMerge->current_stock_value);
+	if(c->money <= CostToMerge){
+		return CommandCostWithParam(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY, CostToMerge);
+	}
+	
 	//ChangeOwnershipOfCompanyItems(CompanyToMergeID, c->index);
-	ChangeOwnershipOfCompanyItems(CompanyToMerge->index, c->index);
-	if (c->is_ai) AI::Stop(c->index);
+	if (flags.Test(DoCommandFlag::Execute)) {
+		c->money -= CostToMerge;
+		if (c->is_ai) AI::Stop(CompanyToMerge->index);
 	CloseCompanyWindows(CompanyToMerge->index);
+	CloseWindowById(WC_COMPANY_OWNERSHIP, CompanyToMerge->index);
+	ChangeOwnershipOfCompanyItems(CompanyToMerge->index, c->index);
 	InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
 	InvalidateWindowClassesData(WC_SHIPS_LIST, 0);
 	InvalidateWindowClassesData(WC_ROADVEH_LIST, 0);
 	InvalidateWindowClassesData(WC_AIRCRAFT_LIST, 0);
-	if (flags.Test(DoCommandFlag::Execute)) {
+	
+		
 		auto cni = std::make_unique<CompanyNewsInformation>(STR_NEWS_COMPANY_MERGER_TITLE, CompanyToMerge, Company::Get(_current_company));
 		EncodedString headline = true
 		? GetEncodedString(STR_NEWS_MERGER_TAKEOVER_TITLE, cni->company_name, cni->other_company_name)

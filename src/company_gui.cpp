@@ -2599,18 +2599,18 @@ struct CompanyOwnershipWindow : Window {
 			case WID_CO_SELL:
 			{
 				
-				Command<CMD_SELL_OWNERSHIP>::Post(STR_ERROR_CAN_T_BUY_COMPANY_OWNERSHIP, c->index, 5);
+				Command<CMD_SELL_OWNERSHIP>::Post(STR_ERROR_CAN_T_BUY_COMPANY_OWNERSHIP, c->index, 10);
 				break;
 			}
 			case WID_CO_MERGE:
 			{
 				Command<CMD_COMPANY_OWNERSHIP_MERGE>::Post(STR_ERROR_CAN_T_BUY_COMPANY_OWNERSHIP, c->index);
-				this->Close();
+				//this->Close();
 				break;
 			}
 			case WID_CO_BUY:
 			{
-				Command<CMD_BUY_OWNERSHIP>::Post(STR_ERROR_CAN_T_BUY_COMPANY_OWNERSHIP, c->index, 5);
+				Command<CMD_BUY_OWNERSHIP>::Post(STR_ERROR_CAN_T_BUY_COMPANY_OWNERSHIP, c->index, 10);
 				//this->ReInit();
 				break;
 			}
