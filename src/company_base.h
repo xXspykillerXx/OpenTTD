@@ -148,6 +148,7 @@ struct Company : CompanyProperties, CompanyPool::PoolItem<&_company_pool> {
 	FreeUnitIDGenerator freegroups{};
 
 	Money GetMaxLoan() const;
+	std::map<CompanyID, uint32_t> GetCompanyOwnership(CompanyID index);
 
 	/**
 	 * Is this company a valid company, controlled by the computer (a NoAI program)?

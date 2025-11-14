@@ -109,7 +109,11 @@ Money Company::GetMaxLoan() const
 	if (this->max_loan == COMPANY_MAX_LOAN_DEFAULT) return _economy.max_loan;
 	return this->max_loan;
 }
-
+std::map<CompanyID, uint32_t> Company::GetCompanyOwnership(CompanyID index)
+{
+	Company *c = Company::Get(index);
+	return c->CompanyOwnership;
+} 
 /**
  * Sets the local company and updates the settings that are set on a
  * per-company basis to reflect the core's state in the GUI.

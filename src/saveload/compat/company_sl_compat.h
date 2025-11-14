@@ -79,6 +79,12 @@ const SaveLoadCompat _company_economy_compat[] = {
 	SLC_VAR("performance_history"),
 };
 
+/** Original field order for SlCompanyOwnership. */
+const SaveLoadCompat _company_ownership_compat[] = {
+	SLC_VAR("company"),
+    SLC_VAR("value"),
+};
+
 /** Original field order for SlCompanyLiveries. */
 const SaveLoadCompat _company_liveries_compat[] = {
 	SLC_VAR("in_use"),

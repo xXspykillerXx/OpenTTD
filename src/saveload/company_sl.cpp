@@ -23,6 +23,7 @@
 #include "table/strings.h"
 
 #include "../safeguards.h"
+#include "../debug.h"
 
 /**
  * Search for a face variable by type and name.
@@ -382,6 +383,7 @@ public:
 	void LoadCheck(CompanyProperties *c) const override { this->Load(c); }
 };
 
+
 class SlCompanyOldEconomy : public SlCompanyEconomy {
 public:
 	void Save(CompanyProperties *c) const override
@@ -405,6 +407,46 @@ public:
 	}
 
 	void LoadCheck(CompanyProperties *c) const override { this->Load(c); }
+};
+class SlCompanyOwnership: public DefaultSaveLoadHandler<SlCompanyOwnership, CompanyProperties>{
+	public:
+	
+		struct CompanyOwnershipEntry{
+			CompanyID company;
+			uint32_t value;
+		};
+		static inline const SaveLoad description[] = {
+		SLE_VAR(CompanyOwnershipEntry, company, SLE_UINT8),
+		SLE_VAR(CompanyOwnershipEntry, value,   SLE_UINT32),
+	};
+	static inline const SaveLoadCompatTable compat_description = _company_ownership_compat;
+		void Save(CompanyProperties *c) const override
+		{
+			SlSetStructListLength(c->CompanyOwnership.size());
+
+        for (const auto &pair : c->CompanyOwnership) {
+            CompanyOwnershipEntry entry{};
+            entry.company = pair.first;
+            entry.value   = pair.second;
+
+            SlObject(&entry, this->GetDescription());
+        }
+		}
+		void Load(CompanyProperties *c) const override
+		{
+			size_t count = SlGetStructListLength(UINT8_MAX);
+
+        for (size_t i = 0; i < count; i++) {
+            CompanyOwnershipEntry entry{};
+            SlObject(&entry, this->GetLoadDescription());
+
+            c->CompanyOwnership[entry.company] = entry.value;
+        }
+		}
+		void LoadCheck(CompanyProperties *c) const override
+    {
+        this->Load(c);
+    }
 };
 
 class SlCompanyLiveries : public DefaultSaveLoadHandler<SlCompanyLiveries, CompanyProperties> {
@@ -510,6 +552,7 @@ static const SaveLoad _company_desc[] = {
 	SLE_CONDVAR(CompanyProperties, current_loan,          SLE_VAR_I64 | SLE_FILE_I32,  SL_MIN_VERSION, SLV_65),
 	SLE_CONDVAR(CompanyProperties, current_loan,          SLE_INT64,                  SLV_65, SL_MAX_VERSION),
 	SLE_CONDVAR(CompanyProperties, max_loan,              SLE_INT64, SLV_MAX_LOAN_FOR_COMPANY, SL_MAX_VERSION),
+	//SLE_ARR(CompanyProperties, CompanyOwnership,      SLE_, SLV_COMPANY_OWNERSHIP_COMPANY, SL_MAX_VERSION),
 
 	    SLE_VAR(CompanyProperties, colour,                SLE_UINT8),
 	    SLE_VAR(CompanyProperties, money_fraction,        SLE_UINT8),
@@ -545,6 +588,9 @@ static const SaveLoad _company_desc[] = {
 	SLEG_CONDSTRUCT("old_ai", SlCompanyOldAI,                                        SL_MIN_VERSION, SLV_107),
 	SLEG_STRUCT("cur_economy", SlCompanyEconomy),
 	SLEG_STRUCTLIST("old_economy", SlCompanyOldEconomy),
+	SLEG_STRUCTLIST("company_ownership", SlCompanyOwnership),
+	//SLE_CONDARR(CompanyProperties, CompanyOwnership, CompanyID, 99, SL_MIN_VERSION, SL_MAX_VERSION),
+	
 	SLEG_CONDSTRUCTLIST("liveries", SlCompanyLiveries,                               SLV_34, SL_MAX_VERSION),
 };
 
