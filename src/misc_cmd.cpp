@@ -147,6 +147,7 @@ CommandCost CmdSetCompanyMaxLoan(DoCommandFlags flags, CompanyID company, Money 
 CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyToBuyInID, int Amount)
 {
 	Company *c = Company::Get(_current_company);
+	
 	Company *CompanyToBuyIn = Company::Get(CompanyToBuyInID);
 	std::map<CompanyID, uint32> CurrentOwnership = CompanyToBuyIn->CompanyOwnership;
 	if(CurrentOwnership[c->index] == 100){
@@ -201,12 +202,14 @@ CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 	else{
 		CompanyToBuyIn->CompanyOwnership[c->index] += Amount;
 	}
+	Backup<CompanyID> cur_company(_current_company);
 	if	(&MostStock != nullptr)
 	{
 		CompanyToBuyIn->CompanyOwnership[MostStock] -= StockLeftOverToBuy;
 		_current_company = MostStock;
 		SubtractMoneyFromCompany(CommandCost(EXPENSES_OTHER, -StockPrice));
 	}
+	cur_company.Restore();
 	InvalidateCompanyWindows(c);
 	InvalidateCompanyWindows(CompanyToBuyIn);
 	InvalidateWindowData(WC_COMPANY_OWNERSHIP,CompanyToBuyIn->index,1);
