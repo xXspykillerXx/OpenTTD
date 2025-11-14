@@ -902,13 +902,17 @@ static void PayOutCompanyDividends()
 		Money TotalAmountToPayout = 0;
 		Money LastQuarterIncome = c->old_economy.back().income;
 		Money CurrentMoney = c->money;
+		std::map<CompanyID, Money> CompanyPayoutMap;
 		for (const auto& pair : c->CompanyOwnership){
 			if(pair.first == c->index)
 				continue;
-			TotalAmountToPayout += ((LastQuarterIncome * pair.second)/100);
+			// Dividend formula is 5% of stock value
+			Money current_payout = (((c->current_stock_value * pair.second)*5)/100);
+			CompanyPayoutMap[pair.first] = current_payout;
+			TotalAmountToPayout += current_payout;
 		}
 		if(CurrentMoney < TotalAmountToPayout){
-			if(c->current_stock_holder_confidence <= 0)
+			if(c->current_stock_holder_confidence >= 0)
 			{
 				c->current_stock_holder_confidence--;
 			}
@@ -919,24 +923,29 @@ static void PayOutCompanyDividends()
 				_current_company = c->index;
 				SubtractMoneyFromCompany(CommandCost(EXPENSES_DIVIDEND_PAYOUT, AmountToPay));
 				//c->money -= AmountToPay;
-				Company *CompanyToBePaid = Company::Get(pair.first);
-				CompanyToBePaid->money += AmountToPay;
+				//Company *CompanyToBePaid = Company::Get(pair.first);
+				_current_company = pair.first;
+				SubtractMoneyFromCompany(CommandCost(EXPENSES_DIVIDEND_REVENUE, -AmountToPay));
+				//CompanyToBePaid->money += AmountToPay;
+				
 			}
 		}
 		if(CurrentMoney >= TotalAmountToPayout){
-			if(c->current_stock_holder_confidence >= 100)
+			if(c->current_stock_holder_confidence < 100)
 			{
 				c->current_stock_holder_confidence++;
 			}
-			for (const auto& pair : c->CompanyOwnership){
+			for (const auto& pair : CompanyPayoutMap){
 			if(pair.first == c->index)
 				continue;
-				Money AmountToPay = ((LastQuarterIncome * pair.second)/100);
+				
 				_current_company = c->index;
-				SubtractMoneyFromCompany(CommandCost(EXPENSES_DIVIDEND_PAYOUT, AmountToPay));
+				SubtractMoneyFromCompany(CommandCost(EXPENSES_DIVIDEND_PAYOUT, pair.second));
 				//c->money -= AmountToPay;
-				Company *CompanyToBePaid = Company::Get(pair.first);
-				CompanyToBePaid->money += AmountToPay;
+				//Company *CompanyToBePaid = Company::Get(pair.first);
+				_current_company = pair.first;
+				SubtractMoneyFromCompany(CommandCost(EXPENSES_DIVIDEND_REVENUE, -pair.second));
+				//CompanyToBePaid->money += pair.second;
 			}
 		}
 		

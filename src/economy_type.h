@@ -187,6 +187,7 @@ enum ExpensesType : uint8_t {
 	EXPENSES_ROADVEH_REVENUE,     ///< Revenue from road vehicles.
 	EXPENSES_AIRCRAFT_REVENUE,    ///< Revenue from aircraft.
 	EXPENSES_SHIP_REVENUE,        ///< Revenue from ships.
+	EXPENSES_DIVIDEND_REVENUE,	  ///< Revenue from dividends
 	EXPENSES_LOAN_INTEREST,       ///< Interest payments over the loan.
 	EXPENSES_DIVIDEND_PAYOUT,	  ///< Monthly payments to other companys that own stock
 	EXPENSES_OTHER,               ///< Other expenses.

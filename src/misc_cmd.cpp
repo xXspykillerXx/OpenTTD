@@ -192,7 +192,9 @@ CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 	if (flags.Test(DoCommandFlag::Execute))
 	{
 	StockPrice += (CurrentCostFromOthercompanies + AddedCost);
-	c->money -= StockPrice;
+	//c->money -= StockPrice;
+	_current_company = c->index;
+	SubtractMoneyFromCompany(CommandCost(EXPENSES_OTHER, StockPrice));
 	if(CompanyToBuyIn->CompanyOwnership.find(c->index) == CompanyToBuyIn->CompanyOwnership.end()){
 		CompanyToBuyIn->CompanyOwnership[c->index] = Amount;
 	}
@@ -202,6 +204,8 @@ CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 	if	(&MostStock != nullptr)
 	{
 		CompanyToBuyIn->CompanyOwnership[MostStock] -= StockLeftOverToBuy;
+		_current_company = MostStock;
+		SubtractMoneyFromCompany(CommandCost(EXPENSES_OTHER, -StockPrice));
 	}
 	InvalidateCompanyWindows(c);
 	InvalidateCompanyWindows(CompanyToBuyIn);
@@ -219,7 +223,9 @@ CommandCost CmdDecreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 	if (flags.Test(DoCommandFlag::Execute))
 	{
 	Money ValueSold = c->current_stock_value * amount;
-	c->money += ValueSold;
+	//c->money += ValueSold;
+	_current_company = c->index;
+	SubtractMoneyFromCompany(CommandCost(EXPENSES_OTHER, -ValueSold));
 	CompanyToSell->CompanyOwnership[c->index] -= amount;
 	InvalidateCompanyWindows(c);
 	InvalidateCompanyWindows(CompanyToSell);
