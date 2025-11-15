@@ -1894,6 +1894,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_company_widgets = {
 
 				NWidget(WWT_TEXT, INVALID_COLOUR, WID_C_DESC_COMPANY_VALUE), SetFill(1, 0),
 				NWidget(WWT_TEXT, INVALID_COLOUR, WID_C_DESC_COMPANY_STOCK_VALUE), SetFill(1, 0),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_C_DESC_COMPANY_STOCK_CONFIDENCE), SetFill(1, 0),
 				NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
 					NWidget(WWT_TEXT, INVALID_COLOUR, WID_C_DESC_INFRASTRUCTURE), SetStringTip(STR_COMPANY_VIEW_INFRASTRUCTURE),  SetAlignment(SA_LEFT | SA_TOP),
 					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_C_DESC_INFRASTRUCTURE_COUNTS), SetMinimalTextLines(5, 0), SetFill(1, 0),
@@ -2168,7 +2169,8 @@ struct CompanyWindow : Window
 			
 			case WID_C_DESC_COMPANY_STOCK_VALUE:
 				return GetString(STR_COMPANY_VIEW_COMPANY_STOCK_VALUE, CalculateCompanyStockValue(Company::Get(this->window_number))); 
-
+			case WID_C_DESC_COMPANY_STOCK_CONFIDENCE:
+				return GetString(STR_COMPANY_VIEW_COMPANY_STOCK_CONFIDENCE, Company::Get(this->window_number)->current_stock_holder_confidence); 
 			default:
 				return this->Window::GetWidgetString(widget, stringid);
 		}
@@ -2568,7 +2570,7 @@ struct CompanyOwnershipWindow : Window {
 			//costr.top += line_height;
 			//DrawString(ir.left, ir.right, labelr.top, "Test2", TC_ORANGE);
 		Rect originalLeft = ir;
-		int keyValueHorizontalSpacing = 600; 
+		int keyValueHorizontalSpacing = 300; 
 		uint32_t FreeStock = 100;
 		for (const auto& pair : ownership){
 			ir.left = originalLeft.left;
