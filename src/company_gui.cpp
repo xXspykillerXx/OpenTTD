@@ -2544,7 +2544,7 @@ struct CompanyOwnershipWindow : Window {
 				//const Company *c = Company::Get(this->window_number);
 				Company *c = Company::GetIfValid(this->window_number);
 				std::string name = c->name;
-				std::map<CompanyID, uint32> ownership = c->GetCompanyOwnership(this->window_number);
+				std::map<CompanyID, uint32_t> ownership = c->GetCompanyOwnership(this->window_number);
 				//ownership[c->index] = 100;
 		if (c == nullptr) return;
 		//this->list.emplace_back(CompanyOwnershipItemType::Header,GetString(STR_COMPANY_OWNERSHIP_VIEW_COMPANY,pair.first));
@@ -2567,9 +2567,9 @@ struct CompanyOwnershipWindow : Window {
 			//countr.top += line_height;
 			//costr.top += line_height;
 			//DrawString(ir.left, ir.right, labelr.top, "Test2", TC_ORANGE);
-		OTTD_Rect originalLeft = ir;
+		Rect originalLeft = ir;
 		int keyValueHorizontalSpacing = 600; 
-		uint32 FreeStock = 100;
+		uint32_t FreeStock = 100;
 		for (const auto& pair : ownership){
 			ir.left = originalLeft.left;
 			//Rect icon_rect = ir.Indent(this->rank_width + WidgetDimensions::scaled.hsep_wide, rtl).WithWidth(this->icon.width, rtl);

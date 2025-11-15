@@ -149,7 +149,7 @@ CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 	Company *c = Company::Get(_current_company);
 	
 	Company *CompanyToBuyIn = Company::Get(CompanyToBuyInID);
-	std::map<CompanyID, uint32> CurrentOwnership = CompanyToBuyIn->CompanyOwnership;
+	std::map<CompanyID, uint32_t> CurrentOwnership = CompanyToBuyIn->CompanyOwnership;
 	if(CurrentOwnership[c->index] == 100){
 		return CommandCost(STR_ERROR_MAXIMUM_COMPANY_OWNERSHIP);
 	}
@@ -178,11 +178,11 @@ CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 		}
 	}
 	AvailableStock = 100 - UnAvailableStock;
-	uint32 AvailableStockToBuy = 0; 
+	uint32_t AvailableStockToBuy = 0; 
 	if(AvailableStock >= Amount){
 		AvailableStockToBuy = Amount;
 	}
-	uint32 StockLeftOverToBuy = Amount - AvailableStockToBuy;
+	uint32_t StockLeftOverToBuy = Amount - AvailableStockToBuy;
 	Money CostPerStock = CompanyToBuyIn->current_stock_value;
 	Money StockPrice = AvailableStockToBuy * CostPerStock;
 	int AvailableStockDiscount = 1;
@@ -269,7 +269,7 @@ CommandCost CmdCompanyMerge(DoCommandFlags flags, CompanyID CompanyToMergeID)
 	if(CompanyToMerge->CompanyOwnership[c->index] <=50)
 		return CommandCost(STR_ERROR_NOT_ENOUGH_COMPANY_OWNERSHIP);
 	Money CostToMerge = 0;
-	uint32 AmountToBuyFromCompetitors = 0;
+	uint32_t AmountToBuyFromCompetitors = 0;
 	for (const auto &pair : CompanyToMerge->CompanyOwnership)
 	{
 		if(pair.first == c->index){
@@ -281,7 +281,7 @@ CommandCost CmdCompanyMerge(DoCommandFlags flags, CompanyID CompanyToMergeID)
 	CostToMerge = AmountToBuyFromCompetitors * CompanyToMerge->current_stock_value;
 	int StockPriceOtherCompanyModifier = 25;
 	CostToMerge += ((CostToMerge * StockPriceOtherCompanyModifier) / 100);
-	uint32 AvailableStock = 100 - AmountToBuyFromCompetitors - CompanyToMerge->CompanyOwnership[c->index];
+	uint32_t AvailableStock = 100 - AmountToBuyFromCompetitors - CompanyToMerge->CompanyOwnership[c->index];
 	CostToMerge += (AvailableStock * CompanyToMerge->current_stock_value);
 	if(c->money <= CostToMerge){
 		return CommandCostWithParam(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY, CostToMerge);
