@@ -165,7 +165,7 @@ Money CalculateCompanyStockValue(Company *c){
 		int StationValue = 2500;
 		int SignalValue = 2;
 		int CanalValue = 1000;
-		Money NewStockValue = 0;
+		Money NewStockValue = c->base_stock_value;
 		NewStockValue += (c->current_loan/LoanStockValueModifier);
 		NewStockValue += (c->money-c->current_loan);
 		NewStockValue += (c->infrastructure.GetRailTotal() * RailValue);
