@@ -147,7 +147,9 @@ CommandCost CmdSetCompanyMaxLoan(DoCommandFlags flags, CompanyID company, Money 
 CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyToBuyInID, int Amount)
 {
 	Company *c = Company::Get(_current_company);
-	
+	if(c->money <= 0){
+		return CommandCost(STR_ERROR_NO_FUNDS_COMPANY_OWNERSHIP);
+	}
 	Company *CompanyToBuyIn = Company::Get(CompanyToBuyInID);
 	std::map<CompanyID, uint32_t> CurrentOwnership = CompanyToBuyIn->CompanyOwnership;
 	if(CurrentOwnership[c->index] == 100){
@@ -156,6 +158,7 @@ CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 	int AvailableStock = 0;
 	int UnAvailableStock = 0;
 	bool firstLoop = true;
+	bool MostAssigned = false;
 	CompanyID MostStock;
 	for (const auto& pair : CurrentOwnership)
 	{
@@ -165,6 +168,7 @@ CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 			{
 				MostStock = pair.first;
 				firstLoop = false;
+				MostAssigned = true;
 			} 
 		}
 		else{
@@ -203,7 +207,7 @@ CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 		CompanyToBuyIn->CompanyOwnership[c->index] += Amount;
 	}
 	Backup<CompanyID> cur_company(_current_company);
-	if	(&MostStock != nullptr)
+	if	(MostAssigned)
 	{
 		CompanyToBuyIn->CompanyOwnership[MostStock] -= StockLeftOverToBuy;
 		_current_company = MostStock;
@@ -225,7 +229,7 @@ CommandCost CmdDecreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 	}
 	if (flags.Test(DoCommandFlag::Execute))
 	{
-	Money ValueSold = c->current_stock_value * amount;
+	Money ValueSold = CompanyToSell->current_stock_value * amount;
 	//c->money += ValueSold;
 	_current_company = c->index;
 	SubtractMoneyFromCompany(CommandCost(EXPENSES_OTHER, -ValueSold));

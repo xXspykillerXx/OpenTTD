@@ -184,7 +184,7 @@ Money CalculateCompanyStockValue(Company *c){
 		NewStockValue = NewStockValue/100;
 		if(NewStockValue <= 0)
 		{
-			NewStockValue = 0;
+			NewStockValue = 1;
 		}
 		c->current_stock_value = NewStockValue;
 		
