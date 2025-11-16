@@ -151,6 +151,8 @@ CommandCost CmdIncreaseCompanyOwnership(DoCommandFlags flags, CompanyID CompanyT
 		return CommandCost(STR_ERROR_NO_FUNDS_COMPANY_OWNERSHIP);
 	}
 	Company *CompanyToBuyIn = Company::Get(CompanyToBuyInID);
+	if(CompanyToBuyIn->StockProtected)
+		return CommandCost(STR_ERROR_STOCK_PROTECTED)
 	std::map<CompanyID, uint32_t> CurrentOwnership = CompanyToBuyIn->CompanyOwnership;
 	if(CurrentOwnership[c->index] == 100){
 		return CommandCost(STR_ERROR_MAXIMUM_COMPANY_OWNERSHIP);

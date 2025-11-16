@@ -89,6 +89,7 @@ struct CompanyProperties {
 	std::map<CompanyID, uint32_t> CompanyOwnership;
 	Money current_stock_value = 1000;
 	uint32_t current_stock_holder_confidence = 100;
+	bool StockProtected = true;
 
 	Colours colour = COLOUR_BEGIN; ///< Company colour.
 

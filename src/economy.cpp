@@ -905,6 +905,8 @@ static void UpdateCompaniesStockValue()
 static void PayOutCompanyDividends()
 {
 	for (Company *c : Company::Iterate()) {
+		if(c->StockProtected == true)
+			c->StockProtected = false;
 		Money TotalAmountToPayout = 0;
 		Money LastQuarterIncome = c->old_economy.back().income;
 		Money CurrentMoney = c->money;
