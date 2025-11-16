@@ -181,7 +181,13 @@ Money CalculateCompanyStockValue(Company *c){
 			NewStockValue += v->value;
 		}
 		NewStockValue = ((NewStockValue*c->current_stock_holder_confidence)/100);
-		c->current_stock_value = NewStockValue/100;
+		NewStockValue = NewStockValue/100;
+		if(NewStockValue <= 0)
+		{
+			NewStockValue = 0;
+		}
+		c->current_stock_value = NewStockValue;
+		
 		return c->current_stock_value;
 }
 /**
