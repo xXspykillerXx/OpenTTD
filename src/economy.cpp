@@ -164,7 +164,7 @@ Money CalculateCompanyStockValue(Company *c){
 		int AirPortValue = 5000;
 		int StationValue = 2500;
 		int SignalValue = 2;
-		int CanalValue = 100000;
+		int CanalValue = 1000;
 		Money NewStockValue = c->base_stock_value;
 		NewStockValue += (c->current_loan/LoanStockValueModifier);
 		NewStockValue += (c->money-c->current_loan);

@@ -87,7 +87,7 @@ struct CompanyProperties {
 	Money max_loan = COMPANY_MAX_LOAN_DEFAULT; ///< Max allowed amount of the loan or COMPANY_MAX_LOAN_DEFAULT.
 
 	std::map<CompanyID, uint32_t> CompanyOwnership;
-	Money base_stock_value = 1000;
+	Money base_stock_value = 100000;
 	Money current_stock_value = 1000;
 	uint32_t current_stock_holder_confidence = 100;
 	bool StockProtected = true;
